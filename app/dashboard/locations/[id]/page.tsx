@@ -101,8 +101,8 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
     <div className="max-w-4xl mx-auto p-4">
       <Button
         onClick={() => router.back()}
-        className="mb-6"
-        variant="outline"
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-3"
+        variant="secondary"
       >
         Volver
       </Button>

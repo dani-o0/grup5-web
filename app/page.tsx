@@ -15,7 +15,7 @@ export default function LoginPage() {
     e.preventDefault()
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      router.push('/dashboard')
+      router.push('/dashboard/locations')
     } catch (error: any) {
       console.error('Login error:', error.message)
       setError(error.message || 'Invalid credentials')

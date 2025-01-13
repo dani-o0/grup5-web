@@ -41,13 +41,20 @@ interface Location {
     0?: number
     1?: number
   }
-  timestamp?: Timestamp
+  timestamp?: any
   userId?: string
+}
+
+interface User {
+  username: string
+  email: string
+  profilePicture: string
 }
 
 export default function LocationDetail({ params }: { params: { id: string } }) {
   const [location, setLocation] = useState<Location | null>(null)
   const [loading, setLoading] = useState(true)
+  const [username, setUsername] = useState<string>('')
   const router = useRouter()
   const [icon, setIcon] = useState<any>(null)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -70,25 +77,36 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
   }, [])
 
   useEffect(() => {
-    const fetchLocation = async () => {
+    const fetchLocationAndUsername = async () => {
       try {
-        const docRef = doc(db, 'Lavabos', params.id)
-        const docSnap = await getDoc(docRef)
+        // Obtener datos de la localización
+        const locationDoc = await getDoc(doc(db, 'Lavabos', params.id))
         
-        if (docSnap.exists()) {
-          setLocation({
-            id: docSnap.id,
-            ...docSnap.data()
-          } as Location)
+        if (locationDoc.exists()) {
+          const locationData = {
+            id: locationDoc.id,
+            ...locationDoc.data()
+          } as Location
+          
+          setLocation(locationData)
+
+          // Si existe userId, buscar el username en la colección Users
+          if (locationData.userId) {
+            const userDoc = await getDoc(doc(db, 'Users', locationData.userId))
+            if (userDoc.exists()) {
+              const userData = userDoc.data() as User
+              setUsername(userData.username)
+            }
+          }
         }
       } catch (error) {
-        console.error('Error fetching location:', error)
+        console.error('Error fetching data:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchLocation()
+    fetchLocationAndUsername()
   }, [params.id])
 
   // Añadir función para manejar el borrado
@@ -198,10 +216,15 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
         )}
 
         <div className="text-sm text-gray-400">
-          {location.timestamp && (
+          {location?.timestamp && (
             <p>Fecha: {location.timestamp.toDate().toLocaleDateString()}</p>
           )}
-          {location.userId && <p>ID de usuario: {location.userId}</p>}
+          {location?.userId && (
+            <>
+              <p>ID de usuario: {location.userId}</p>
+              <p>Nombre de usuario: {username || 'No encontrado'}</p>
+            </>
+          )}
         </div>
       </div>
 

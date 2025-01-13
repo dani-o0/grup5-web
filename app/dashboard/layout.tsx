@@ -1,12 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+
+interface User {
+  username: string
+  email: string
+  profilePicture: string
+}
 
 export default function DashboardLayout({
   children,
@@ -15,7 +23,28 @@ export default function DashboardLayout({
 }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [isLogoutDialogOpen, setLogoutDialogOpen] = useState(false)
+  const [username, setUsername] = useState<string>('')
   const router = useRouter()
+
+  useEffect(() => {
+    // Escuchar cambios en el estado de autenticación
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          // Obtener el documento del usuario usando el UID como ID del documento
+          const userDoc = await getDoc(doc(db, 'Users', user.uid))
+          if (userDoc.exists()) {
+            const userData = userDoc.data() as User
+            setUsername(userData.username)
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error)
+        }
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -66,9 +95,9 @@ export default function DashboardLayout({
           <div className="ml-auto flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                M
+                {username ? username.charAt(0).toUpperCase() : 'U'}
               </div>
-              <span className="text-white text-lg">Manolo</span>
+              <span className="text-white text-lg">{username || 'Usuario'}</span>
             </div>
             <button
               onClick={() => setLogoutDialogOpen(true)}

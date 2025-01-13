@@ -7,14 +7,28 @@ import { Search } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useRouter } from 'next/navigation'
 
 interface Location {
   id: string
   name: string
   date: string
+  description?: string
+  imageUrl?: string
+  location?: {
+    latitude: number
+    longitude: number
+  }
+  rating?: {
+    0?: number
+    1?: number
+  }
+  timestamp?: string
+  userId?: string
 }
 
 export default function LocationsPage() {
+  const router = useRouter()
   const [locations, setLocations] = useState<Location[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
@@ -78,7 +92,7 @@ export default function LocationsPage() {
             </div>
             <div className="flex gap-3">
               <Button
-                onClick={() => {/* Implementar vista detalle */}}
+                onClick={() => router.push(`/dashboard/locations/${location.id}`)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 variant="secondary"
               >

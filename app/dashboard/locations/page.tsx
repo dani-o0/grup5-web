@@ -7,6 +7,7 @@ import { Search } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 interface Location {
@@ -71,6 +72,16 @@ export default function LocationsPage() {
             key={location.id}
             className="bg-[#2f3146] p-4 rounded-lg flex items-center justify-between"
           >
+            {location.imageUrl && (
+              <div className="relative w-32 h-16 rounded-lg overflow-hidden">
+                <Image
+                  src={location.imageUrl}
+                  alt={location.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
             <div>
               <h3 className="text-white font-medium">{location.name}</h3>
               <p className="text-gray-400 text-sm">{location.date}</p>

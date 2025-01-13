@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { doc, getDoc, Timestamp } from 'firebase/firestore'
+import { doc, getDoc, Timestamp, deleteDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import 'leaflet/dist/leaflet.css'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
 // Importación dinámica del mapa para evitar problemas de SSR
 const MapContainer = dynamic(
@@ -49,6 +50,7 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const [icon, setIcon] = useState<any>(null)
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   // Cargar el icono del marcador
   useEffect(() => {
@@ -89,6 +91,16 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
     fetchLocation()
   }, [params.id])
 
+  // Añadir función para manejar el borrado
+  const handleDeleteLocation = async () => {
+    try {
+      await deleteDoc(doc(db, 'Lavabos', params.id))
+      router.push('/dashboard/locations') // Redirigir a la lista después de borrar
+    } catch (error) {
+      console.error('Error deleting location:', error)
+    }
+  }
+
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Cargando...</div>
   }
@@ -99,13 +111,23 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <Button
-        onClick={() => router.back()}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-3"
-        variant="secondary"
-      >
-        Volver
-      </Button>
+      <div className="flex gap-3 items-center mb-6">
+        <Button
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          variant="secondary"
+        >
+          Volver
+        </Button>
+        
+        <Button
+          onClick={() => setDeleteDialogOpen(true)}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          variant="destructive"
+        >
+          Eliminar
+        </Button>
+      </div>
 
       <div className="bg-[#2f3146] rounded-lg p-6">
         <h1 className="text-2xl font-bold text-white mb-4">{location.name}</h1>
@@ -182,6 +204,13 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
           {location.userId && <p>ID de usuario: {location.userId}</p>}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleDeleteLocation}
+        message="¿Estás seguro de que deseas eliminar esta localización?"
+      />
     </div>
   )
 } 

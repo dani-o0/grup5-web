@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { collection, getDocs, deleteDoc, doc, addDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, addDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { Search } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -32,7 +32,6 @@ export default function LocationsPage() {
   const [locations, setLocations] = useState<Location[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [newLocationName, setNewLocationName] = useState('')
   const [isAddingLocation, setIsAddingLocation] = useState(false)
 
@@ -52,20 +51,6 @@ export default function LocationsPage() {
   const filteredLocations = locations.filter(location =>
     location.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
-  const handleDeleteLocation = async () => {
-    if (selectedLocation) {
-      try {
-        await deleteDoc(doc(db, 'Lavabos', selectedLocation.id))
-        setLocations(locations.filter(loc => loc.id !== selectedLocation.id))
-        setDeleteDialogOpen(false)
-        setSelectedLocation(null)
-      } catch (error) {
-        console.error('Error deleting location:', error)
-      }
-    }
-  }
-
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -98,27 +83,10 @@ export default function LocationsPage() {
               >
                 Entrar
               </Button>
-              <Button
-                onClick={() => {
-                  setSelectedLocation(location)
-                  setDeleteDialogOpen(true)
-                }}
-                variant="destructive"
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                Eliminar
-              </Button>
             </div>
           </div>
         ))}
       </div>
-
-      <ConfirmDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={handleDeleteLocation}
-        message="¿Estas seguro de que deseas eliminar la localización?"
-      />
     </div>
   )
 }

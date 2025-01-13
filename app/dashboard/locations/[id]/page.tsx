@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, Timestamp } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
@@ -40,7 +40,7 @@ interface Location {
     0?: number
     1?: number
   }
-  timestamp?: string
+  timestamp?: Timestamp
   userId?: string
 }
 

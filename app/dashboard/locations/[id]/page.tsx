@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import Image from 'next/image'
+import { Divide } from 'lucide-react'
 
 interface Location {
   id: string
@@ -63,8 +64,8 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
     <div className="max-w-4xl mx-auto p-4">
       <Button
         onClick={() => router.back()}
-        className="mb-6"
-        variant="outline"
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-3"
+        variant="secondary"
       >
         Volver
       </Button>
@@ -102,9 +103,9 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white mb-2">Valoraciones</h2>
             <p className="text-gray-300">
-              2.5 estrellas: {location.rating[0] || 0} valoraciones
+              {location.rating[0] || 0} valoraciones
               <br />
-              4.5 estrellas: {location.rating[1] || 0} valoraciones
+              {location.rating[1] || 0} valoraciones
             </p>
           </div>
         )}

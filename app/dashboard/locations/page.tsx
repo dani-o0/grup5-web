@@ -52,29 +52,12 @@ export default function LocationsPage() {
     }
   }
 
-  const handleAddLocation = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newLocationName.trim()) {
-      try {
-        const docRef = await addDoc(collection(db, 'locations'), {
-          name: newLocationName.trim(),
-          date: new Date().toLocaleDateString()
-        })
-        const newLocation = { id: docRef.id, name: newLocationName.trim(), date: new Date().toLocaleDateString() }
-        setLocations([...locations, newLocation])
-        setNewLocationName('')
-        setIsAddingLocation(false)
-      } catch (error) {
-        console.error('Error adding location:', error)
-      }
-    }
-  }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <Input
+        <input
           type="text"
           placeholder="Buscador..."
           value={searchTerm}
@@ -83,45 +66,14 @@ export default function LocationsPage() {
         />
       </div>
 
-      {isAddingLocation ? (
-        <form onSubmit={handleAddLocation} className="mb-6">
-          <Input
-            type="text"
-            value={newLocationName}
-            onChange={(e) => setNewLocationName(e.target.value)}
-            placeholder="Nombre de la nueva localización"
-            className="w-full mb-2"
-          />
-          <div className="flex gap-2">
-            <Button type="submit" className="bg-green-500 hover:bg-green-600">
-              Añadir
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setIsAddingLocation(false)}
-              variant="secondary"
-            >
-              Cancelar
-            </Button>
-          </div>
-        </form>
-      ) : (
-        <Button
-          onClick={() => setIsAddingLocation(true)}
-          className="mb-6"
-        >
-          Añadir Localización
-        </Button>
-      )}
-
       <div className="grid gap-4">
         {filteredLocations.map(location => (
           <div
             key={location.id}
-            className="bg-card p-4 rounded-lg flex items-center justify-between"
+            className="bg-[#2f3146] p-4 rounded-lg flex items-center justify-between"
           >
             <div>
-              <h3 className="font-medium">{location.name}</h3>
+              <h3 className="text-white font-medium">{location.name}</h3>
               <p className="text-gray-400 text-sm">{location.date}</p>
             </div>
             <div className="flex gap-3">

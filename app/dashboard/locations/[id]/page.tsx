@@ -6,7 +6,26 @@ import { db } from '@/lib/firebase'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import Image from 'next/image'
-import { Divide } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import 'leaflet/dist/leaflet.css'
+
+// Importación dinámica del mapa para evitar problemas de SSR
+const MapContainer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.MapContainer),
+  { ssr: false }
+)
+const TileLayer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.TileLayer),
+  { ssr: false }
+)
+const Marker = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Marker),
+  { ssr: false }
+)
+const Popup = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Popup),
+  { ssr: false }
+)
 
 interface Location {
   id: string
@@ -29,6 +48,24 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
   const [location, setLocation] = useState<Location | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const [icon, setIcon] = useState<any>(null)
+
+  // Cargar el icono del marcador
+  useEffect(() => {
+    (async () => {
+      if (typeof window !== 'undefined') {
+        const L = (await import('leaflet')).default
+        setIcon(
+          new L.Icon({
+            iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+          })
+        )
+      }
+    })()
+  }, [])
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -64,8 +101,8 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
     <div className="max-w-4xl mx-auto p-4">
       <Button
         onClick={() => router.back()}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-3"
-        variant="secondary"
+        className="mb-6"
+        variant="outline"
       >
         Volver
       </Button>
@@ -85,20 +122,39 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
         )}
 
         {location.description && (
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-white mb-2">Descripción</h2>
-            <p className="text-gray-300">{location.description}</p>
-          </div>
+          <p className="text-gray-300 mb-4">{location.description}</p>
         )}
 
-        {location.location && (
+        {location.location && icon && (
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white mb-2">Ubicación</h2>
-            <p className="text-gray-300">
-              Latitud: {location.location.latitude}
-              <br />
-              Longitud: {location.location.longitude}
-            </p>
+            <div className="w-[350px] h-[350px] rounded-lg overflow-hidden">
+              <MapContainer
+                center={[location.location.latitude, location.location.longitude]}
+                zoom={15}
+                style={{ height: '100%', width: '100%' }}
+                zoomControl={false}
+                dragging={false}
+                touchZoom={false}
+                scrollWheelZoom={false}
+                doubleClickZoom={false}
+                boxZoom={false}
+                keyboard={false}
+                attributionControl={false}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker 
+                  position={[location.location.latitude, location.location.longitude]}
+                  icon={icon}
+                >
+                  <Popup>
+                    {location.name}
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            </div>
           </div>
         )}
 

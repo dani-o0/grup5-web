@@ -171,7 +171,7 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
 
         <div className="text-sm text-gray-400">
           {location.timestamp && (
-            <p>Fecha: {new Date(location.timestamp).toLocaleDateString()}</p>
+            <p>Fecha: {location.timestamp.toDate().toLocaleDateString()}</p>
           )}
           {location.userId && <p>ID de usuario: {location.userId}</p>}
         </div>

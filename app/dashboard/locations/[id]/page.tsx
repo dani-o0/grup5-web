@@ -121,8 +121,10 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
           </div>
         )}
 
+        <h2 className="text-lg font-semibold text-white mb-2">Descripcion</h2>
+
         {location.description && (
-          <p className="text-gray-300 mb-4">{location.description}</p>
+            <p className="text-gray-300 mb-4">{location.description}</p>
         )}
 
         {location.location && icon && (

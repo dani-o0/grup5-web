@@ -1,4 +1,6 @@
-import { Modal } from "@/components/ui/modal"
+import React from 'react'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 interface ConfirmDialogProps {
   isOpen: boolean
@@ -9,25 +11,22 @@ interface ConfirmDialogProps {
 
 export function ConfirmDialog({ isOpen, onClose, onConfirm, message }: ConfirmDialogProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="">
-      <div className="text-center">
-        <p className="mb-6">{message}</p>
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={onConfirm}
-            className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            Aceptar
-          </button>
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirmar acción</DialogTitle>
+        </DialogHeader>
+        <p>{message}</p>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancelar
-          </button>
-        </div>
-      </div>
-    </Modal>
+          </Button>
+          <Button variant="destructive" onClick={onConfirm}>
+            Confirmar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

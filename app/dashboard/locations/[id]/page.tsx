@@ -162,9 +162,13 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white mb-2">Valoraciones</h2>
             <p className="text-gray-300">
-              {location.rating[0] || 0} valoraciones
-              <br />
-              {location.rating[1] || 0} valoraciones
+              {/* Calcular la media de las valoraciones */}
+              {(() => {
+                const ratings = Object.values(location.rating); // Extraer los valores del objeto rating
+                const total = ratings.reduce((sum, val) => sum + (val || 0), 0); // Sumar valores
+                const average = ratings.length > 0 ? total / ratings.length : 0; // Calcular media
+                return `Media: ${average.toFixed(2)} estrellas`;
+              })()}
             </p>
           </div>
         )}

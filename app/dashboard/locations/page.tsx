@@ -79,7 +79,7 @@ export default function LocationsPage() {
           placeholder="Buscador..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2"
+          className="w-full pl-10 pr-4 py-2 bg-[#2f3146] text-white rounded-lg border-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -122,11 +122,12 @@ export default function LocationsPage() {
           >
             <div>
               <h3 className="font-medium">{location.name}</h3>
-              <p className="text-sm text-muted-foreground">{location.date}</p>
+              <p className="text-gray-400 text-sm">{location.date}</p>
             </div>
             <div className="flex gap-3">
               <Button
                 onClick={() => {/* Implementar vista detalle */}}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 variant="secondary"
               >
                 Entrar
@@ -137,6 +138,7 @@ export default function LocationsPage() {
                   setDeleteDialogOpen(true)
                 }}
                 variant="destructive"
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
                 Eliminar
               </Button>

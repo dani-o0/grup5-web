@@ -84,7 +84,10 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
         )}
 
         {location.description && (
-          <p className="text-gray-300 mb-4">{location.description}</p>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-white mb-2">Descripción</h2>
+            <p className="text-gray-300">{location.description}</p>
+          </div>
         )}
 
         {location.location && (

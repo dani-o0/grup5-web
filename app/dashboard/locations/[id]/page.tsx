@@ -156,7 +156,7 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
               src={location.imageUrl}
               alt={location.name}
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
         )}

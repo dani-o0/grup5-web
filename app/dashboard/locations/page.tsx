@@ -78,7 +78,7 @@ export default function LocationsPage() {
                   src={location.imageUrl}
                   alt={location.name}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
             )}

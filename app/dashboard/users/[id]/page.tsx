@@ -148,7 +148,6 @@ export default function UserDetail({ params }: { params: { id: string } }) {
               <p className="text-gray-400">Total de locations:</p>
               <p className="text-white text-xl">{userLocations.length}</p>
             </div>
-            {/* Puedes agregar más estadísticas aquí */}
           </div>
         </div>
       </div>

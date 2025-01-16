@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
 
 interface User {
   id: string
@@ -10,27 +12,61 @@ interface User {
   date: string
 }
 
-const MOCK_USERS: User[] = [
-  { id: '1', name: 'Vector', date: '12/12/2006' },
-  { id: '2', name: 'Marc', date: '01/12/2012' },
-  { id: '3', name: 'Pablo', date: '02/09/2012' },
-  { id: '4', name: 'Jose', date: '05/11/2022' },
-  { id: '5', name: 'El Gatino', date: '05/11/2022' }
-]
-
 export default function UsersPage() {
+  const [users, setUsers] = useState<User[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
-  const filteredUsers = MOCK_USERS.filter(user =>
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users')
+        const data = await response.json()
+        if (data.users) {
+          setUsers(data.users)
+        }
+      } catch (error) {
+        console.error('Error al cargar usuarios:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
+
+  const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const handleDeleteUser = () => {
-    // Implementar la lógica de eliminación
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return
+
+    try {
+      const response = await fetch(`/api/users/${selectedUser.id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        setUsers(users.filter(user => user.id !== selectedUser.id))
+      }
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error)
+    }
+
     setDeleteDialogOpen(false)
     setSelectedUser(null)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    )
   }
 
   return (
@@ -57,21 +93,13 @@ export default function UsersPage() {
               <p className="text-gray-400 text-sm">{user.date}</p>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => {/* Implementar vista detalle */}}
+              <Button
+                onClick={() => router.push(`/dashboard/users/${user.id}`)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                variant="secondary"
               >
                 Entrar
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedUser(user)
-                  setDeleteDialogOpen(true)
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                Eliminar
-              </button>
+              </Button>
             </div>
           </div>
         ))}

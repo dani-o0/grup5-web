@@ -170,7 +170,7 @@ export default function LocationDetail({ params }: { params: { id: string } }) {
         {location.location && icon && (
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white mb-2">Ubicación</h2>
-            <div className="w-[350px] h-[350px] rounded-lg overflow-hidden">
+            <div className="relative h-64 rounded-lg overflow-hidden">
               <MapContainer
                 center={[location.location.latitude, location.location.longitude]}
                 zoom={15}
